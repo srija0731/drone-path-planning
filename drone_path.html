@@ -1,0 +1,52 @@
+
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Drone Path Planning</title>
+      <style>
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background: linear-gradient(135deg, #020817, #0f172a 60%, #111827);
+          color: #e2e8f0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+        }
+        .card {
+          width: min(95vw, 1000px);
+          background: rgba(15, 23, 42, 0.96);
+          border: 1px solid #334155;
+          border-radius: 18px;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+          padding: 20px;
+        }
+        h1 { font-size: 28px; margin: 0 0 16px; text-align: center; }
+        svg { width: 100%; height: auto; background: #f8fafc; border-radius: 12px; display: block; }
+        .label { font-size: 15px; fill: #0f172a; font-weight: bold; }
+        .axis { font-size: 12px; fill: #475569; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Drone Path Planning Map</h1>
+        <svg viewBox="0 0 900 700" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="900" height="700" fill="#f8fafc" />
+          <line x1="60.00" y1="60.00" x2="60.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="640.00" x2="840.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="86.00" y1="60.00" x2="86.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="620.67" x2="840.00" y2="620.67" stroke="#e2e8f0" stroke-width="1" /><line x1="112.00" y1="60.00" x2="112.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="601.33" x2="840.00" y2="601.33" stroke="#e2e8f0" stroke-width="1" /><line x1="138.00" y1="60.00" x2="138.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="582.00" x2="840.00" y2="582.00" stroke="#e2e8f0" stroke-width="1" /><line x1="164.00" y1="60.00" x2="164.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="562.67" x2="840.00" y2="562.67" stroke="#e2e8f0" stroke-width="1" /><line x1="190.00" y1="60.00" x2="190.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="543.33" x2="840.00" y2="543.33" stroke="#e2e8f0" stroke-width="1" /><line x1="216.00" y1="60.00" x2="216.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="524.00" x2="840.00" y2="524.00" stroke="#e2e8f0" stroke-width="1" /><line x1="242.00" y1="60.00" x2="242.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="504.67" x2="840.00" y2="504.67" stroke="#e2e8f0" stroke-width="1" /><line x1="268.00" y1="60.00" x2="268.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="485.33" x2="840.00" y2="485.33" stroke="#e2e8f0" stroke-width="1" /><line x1="294.00" y1="60.00" x2="294.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="466.00" x2="840.00" y2="466.00" stroke="#e2e8f0" stroke-width="1" /><line x1="320.00" y1="60.00" x2="320.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="446.67" x2="840.00" y2="446.67" stroke="#e2e8f0" stroke-width="1" /><line x1="346.00" y1="60.00" x2="346.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="427.33" x2="840.00" y2="427.33" stroke="#e2e8f0" stroke-width="1" /><line x1="372.00" y1="60.00" x2="372.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="408.00" x2="840.00" y2="408.00" stroke="#e2e8f0" stroke-width="1" /><line x1="398.00" y1="60.00" x2="398.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="388.67" x2="840.00" y2="388.67" stroke="#e2e8f0" stroke-width="1" /><line x1="424.00" y1="60.00" x2="424.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="369.33" x2="840.00" y2="369.33" stroke="#e2e8f0" stroke-width="1" /><line x1="450.00" y1="60.00" x2="450.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="350.00" x2="840.00" y2="350.00" stroke="#e2e8f0" stroke-width="1" /><line x1="476.00" y1="60.00" x2="476.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="330.67" x2="840.00" y2="330.67" stroke="#e2e8f0" stroke-width="1" /><line x1="502.00" y1="60.00" x2="502.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="311.33" x2="840.00" y2="311.33" stroke="#e2e8f0" stroke-width="1" /><line x1="528.00" y1="60.00" x2="528.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="292.00" x2="840.00" y2="292.00" stroke="#e2e8f0" stroke-width="1" /><line x1="554.00" y1="60.00" x2="554.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="272.67" x2="840.00" y2="272.67" stroke="#e2e8f0" stroke-width="1" /><line x1="580.00" y1="60.00" x2="580.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="253.33" x2="840.00" y2="253.33" stroke="#e2e8f0" stroke-width="1" /><line x1="606.00" y1="60.00" x2="606.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="234.00" x2="840.00" y2="234.00" stroke="#e2e8f0" stroke-width="1" /><line x1="632.00" y1="60.00" x2="632.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="214.67" x2="840.00" y2="214.67" stroke="#e2e8f0" stroke-width="1" /><line x1="658.00" y1="60.00" x2="658.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="195.33" x2="840.00" y2="195.33" stroke="#e2e8f0" stroke-width="1" /><line x1="684.00" y1="60.00" x2="684.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="176.00" x2="840.00" y2="176.00" stroke="#e2e8f0" stroke-width="1" /><line x1="710.00" y1="60.00" x2="710.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="156.67" x2="840.00" y2="156.67" stroke="#e2e8f0" stroke-width="1" /><line x1="736.00" y1="60.00" x2="736.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="137.33" x2="840.00" y2="137.33" stroke="#e2e8f0" stroke-width="1" /><line x1="762.00" y1="60.00" x2="762.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="118.00" x2="840.00" y2="118.00" stroke="#e2e8f0" stroke-width="1" /><line x1="788.00" y1="60.00" x2="788.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="98.67" x2="840.00" y2="98.67" stroke="#e2e8f0" stroke-width="1" /><line x1="814.00" y1="60.00" x2="814.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="79.33" x2="840.00" y2="79.33" stroke="#e2e8f0" stroke-width="1" /><line x1="840.00" y1="60.00" x2="840.00" y2="640.00" stroke="#e2e8f0" stroke-width="1" /><line x1="60.00" y1="60.00" x2="840.00" y2="60.00" stroke="#e2e8f0" stroke-width="1" />
+          <rect x="216.00" y="427.33" width="78.00" height="58.00" fill="#475569" stroke="#1e293b" stroke-width="2" rx="4" /><rect x="346.00" y="427.33" width="52.00" height="135.33" fill="#475569" stroke="#1e293b" stroke-width="2" rx="4" /><rect x="450.00" y="369.33" width="130.00" height="38.67" fill="#475569" stroke="#1e293b" stroke-width="2" rx="4" /><rect x="268.00" y="292.00" width="104.00" height="58.00" fill="#475569" stroke="#1e293b" stroke-width="2" rx="4" />
+          <polyline points="60.00,640.00 320.00,446.67 580.00,253.33" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="60.00" cy="640.00" r="9" fill="#16a34a" stroke="#14532d" stroke-width="3" />
+          <circle cx="580.00" cy="253.33" r="9" fill="#dc2626" stroke="#7f1d1d" stroke-width="3" />
+          <text x="74.00" y="628.00" class="label">Start</text>
+          <text x="594.00" y="241.33" class="label">Goal</text>
+          <text x="60.00" y="680.00" class="axis">0</text>
+          <text x="830.00" y="680.00" class="axis">30.0</text>
+          <text x="20.00" y="68.00" class="axis">30.0</text>
+        </svg>
+      </div>
+    </body>
+    </html>
+    

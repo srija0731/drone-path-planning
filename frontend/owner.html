@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Owner Fleet Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="owner.css">
+</head>
+
+<body>
+    <main class="owner-shell">
+        <header class="owner-topbar">
+            <div>
+                <p class="eyebrow">OWNER VIEW / FLEET MONITOR</p>
+                <h1>Drone status</h1>
+            </div>
+            <a href="/" class="back-link">Open planner ↗</a>
+        </header>
+        <section class="owner-grid">
+            <section class="owner-map-wrap">
+                <div id="owner-map"></div>
+                <div class="map-tag">LAST KNOWN POSITIONS</div>
+            </section>
+            <aside class="fleet-panel">
+                <div class="fleet-panel-heading">
+                    <div>
+                        <p class="eyebrow">LIVE TELEMETRY</p>
+                        <h2>Your fleet</h2>
+                    </div><span id="sync-state">Connecting</span></div>
+                <div class="summary">
+                    <div><span>ACTIVE</span><strong id="active-count">0</strong></div>
+                    <div><span>SAFE</span><strong id="safe-count">0</strong></div>
+                    <div><span>ATTENTION</span><strong id="attention-count">0</strong></div>
+                </div>
+                <div id="owner-fleet-list" class="owner-fleet-list">
+                    <p class="empty">No mission has been planned yet.</p>
+                </div>
+                <p class="owner-note">This view updates from <code>/api/drones</code>. A real drone or GPS device can report progress through <code>POST /api/drones/status</code>.</p>
+            </aside>
+        </section>
+    </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="owner.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: drone-path-planning
+    runtime: python
+    buildCommand: ""
+    startCommand: "python server.py"
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: OPEN_BROWSER
+        value: "false"

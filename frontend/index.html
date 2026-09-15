@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Drone Route Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main class="shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">FLIGHT OPERATIONS / LIVE MAP</p>
+                <h1>Drone route console</h1>
+            </div>
+            <div class="top-actions"><a class="owner-link" href="/owner.html">Owner view ↗</a>
+                <div class="status"><span id="status-dot"></span><span id="status-text">Connecting</span></div>
+            </div>
+        </header>
+
+        <section class="workspace">
+            <aside class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">MISSION SETUP</p>
+                        <h2>Plan a flight</h2>
+                    </div>
+                    <span class="mission-number">01</span>
+                </div>
+                <form id="route-form">
+                    <div id="drone-list">
+                        <div class="drone-card" data-drone="1">
+                            <div class="drone-card-heading"><label>Drone 1</label><button class="remove-drone" type="button" aria-label="Remove drone 1" hidden>Remove</button></div>
+                            <input name="start" placeholder="Launch place or coordinates" required>
+                            <input name="goal" placeholder="Destination place or coordinates" required>
+                        </div>
+                    </div>
+                    <button id="add-drone" class="secondary-button" type="button">+ Add another drone <span>(up to 100)</span></button>
+                    <button id="calculate-route" type="submit"><span>Calculate route</span><span class="arrow">↗</span></button>
+                </form>
+                <div class="hint"><span class="hint-icon">i</span>
+                    <p>Enter any place name in real time, or use coordinates such as <code>17.3850, 78.4867</code>. Internet is required for place lookup.</p>
+                </div>
+                <div class="dataset">
+                    <div><span>INPUT MODE</span><strong>Live multi-drone</strong></div>
+                    <div><span>MAP SOURCE</span><strong>OpenStreetMap</strong></div>
+                </div>
+            </aside>
+            <section class="map-wrap">
+                <div id="map"></div>
+                <div class="map-label">LIVE TERRAIN VIEW <span>·</span> GPS COORDINATES</div>
+            </section>
+        </section>
+
+        <section class="readout">
+            <div><span>DRONES</span><strong id="drone-readout">--</strong></div>
+            <div><span>ROUTES</span><strong id="route-readout">--</strong></div>
+            <div><span>WAYPOINTS</span><strong id="waypoint-readout">--</strong></div>
+            <div><span>STATUS</span><strong id="route-status">Awaiting route</strong></div>
+        </section>
+        <p id="error" class="error" role="alert"></p>
+    </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js?v=remove-route-refresh-fix"></script>
+</body>
+
+</html>
