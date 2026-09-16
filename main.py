@@ -138,13 +138,39 @@ def point_in_obstacle(point, obstacle, margin=0.0):
     return x - margin <= point[0] <= x + width + margin and y - margin <= point[1] <= y + height + margin
 
 
-def segment_is_clear(start, end, obstacles, samples=24):
-    for index in range(samples + 1):
-        ratio = index / samples
-        point = (start[0] + (end[0] - start[0]) * ratio, start[1] + (end[1] - start[1]) * ratio)
-        if any(point_in_obstacle(point, obstacle, margin=0.002) for obstacle in obstacles):
+def segment_intersects_obstacle(start, end, obstacle, margin=0.0):
+    left, bottom, width, height = obstacle
+    left -= margin
+    right = left + width + (2 * margin)
+    bottom -= margin
+    top = bottom + height + (2 * margin)
+    delta_x = end[0] - start[0]
+    delta_y = end[1] - start[1]
+    entry = 0.0
+    exit = 1.0
+
+    for origin, delta, lower, upper in (
+        (start[0], delta_x, left, right),
+        (start[1], delta_y, bottom, top),
+    ):
+        if abs(delta) < 1e-12:
+            if origin < lower or origin > upper:
+                return False
+            continue
+        near = (lower - origin) / delta
+        far = (upper - origin) / delta
+        if near > far:
+            near, far = far, near
+        entry = max(entry, near)
+        exit = min(exit, far)
+        if entry > exit:
             return False
-    return True
+
+    return exit >= 0.0 and entry <= 1.0
+
+
+def segment_is_clear(start, end, obstacles, samples=24):
+    return not any(segment_intersects_obstacle(start, end, obstacle, margin=0.002) for obstacle in obstacles)
 
 
 class ImprovedInformedRRTStar:

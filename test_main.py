@@ -22,6 +22,10 @@ class MainInputParsingTests(unittest.TestCase):
         self.assertGreater(cost, 0)
         self.assertTrue(all(not main.point_in_obstacle(point, obstacle[0]) for point in path[1:-1]))
 
+    def test_segment_check_does_not_miss_narrow_obstacle(self):
+        obstacle = [(4.99, -0.01, 0.02, 0.02)]
+        self.assertFalse(main.segment_is_clear((0, 0), (10, 0), obstacle))
+
 
 if __name__ == "__main__":
     unittest.main()

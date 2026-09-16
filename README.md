@@ -55,6 +55,15 @@ POST /api/drones/status
 {"drone": 1, "status": "reached_safely", "lat": 17.9689, "lon": 79.5941}
 ```
 
+For a real drone gateway, set a shared token before starting the server:
+
+```powershell
+$env:DRONE_API_TOKEN = "replace-with-a-long-random-token"
+py server.py
+```
+
+Send live telemetry to `POST /api/telemetry` using the `Authorization: Bearer <token>` header. The request can include `drone`, `status`, `lat`, `lon`, `battery`, `flight_mode`, and `device`. A drone is shown as connected while it sends telemetry at least once every 15 seconds. The reusable standard-library client is [telemetry_client.py](telemetry_client.py).
+
 Accepted formats:
 
 - `x,y`

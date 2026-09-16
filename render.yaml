@@ -9,3 +9,5 @@ services:
         value: 0.0.0.0
       - key: OPEN_BROWSER
         value: "false"
+      - key: DRONE_API_TOKEN
+        generateValue: true

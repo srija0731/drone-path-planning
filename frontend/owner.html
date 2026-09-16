@@ -36,11 +36,12 @@
                     <div><span>ACTIVE</span><strong id="active-count">0</strong></div>
                     <div><span>SAFE</span><strong id="safe-count">0</strong></div>
                     <div><span>ATTENTION</span><strong id="attention-count">0</strong></div>
+                    <div><span>OBSTACLES</span><strong id="obstacle-count">0</strong></div>
                 </div>
                 <div id="owner-fleet-list" class="owner-fleet-list">
                     <p class="empty">No mission has been planned yet.</p>
                 </div>
-                <p class="owner-note">This view updates from <code>/api/drones</code>. A real drone or GPS device can report progress through <code>POST /api/drones/status</code>.</p>
+                <p class="owner-note">This view updates from <code>/api/drones</code> and shows no-fly zones from <code>/api/obstacles</code>. A real drone or GPS device can report progress through <code>POST /api/drones/status</code>.</p>
             </aside>
         </section>
     </main>

@@ -104,7 +104,7 @@ h2 {
 
 .summary {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     margin-bottom: 22px;
     border: 1px solid var(--line);
 }
@@ -191,6 +191,10 @@ h2 {
 
 .status-failed {
     color: #c94f37;
+}
+
+.owner-drone-card small:first-of-type {
+    color: var(--teal);
 }
 
 .empty,
