@@ -34,6 +34,14 @@ Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in your browser. Keep the te
 
 The deployed owner page is available at your public URL followed by `/owner.html`.
 
+### Free GitHub Pages demo
+
+The frontend is also published without a payment card at:
+
+<https://srija0731.github.io/drone-path-planning/>
+
+The GitHub Pages version runs route drawing and geocoding in the browser. Its owner page reads planned routes from the same browser, but it does not provide shared live telemetry or the backend obstacle-avoidance planner. Use the Python backend deployment for those features.
+
 The owner monitoring page is available at [http://127.0.0.1:8000/owner.html](http://127.0.0.1:8000/owner.html). It polls the latest drone positions and shows `Planned`, `In transit`, `Reached safely`, or `Attention required`.
 
 If `python` is not recognized on your system, use:

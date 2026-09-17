@@ -23,7 +23,10 @@ function renderObstacles(obstacles) {
     obstacleLayer.clearLayers();
     document.querySelector("#obstacle-count").textContent = obstacles.length;
     obstacles.forEach((obstacle, index) => {
-        const bounds = [[obstacle.y, obstacle.x], [obstacle.y + obstacle.h, obstacle.x + obstacle.w]];
+        const bounds = [
+            [obstacle.y, obstacle.x],
+            [obstacle.y + obstacle.h, obstacle.x + obstacle.w]
+        ];
         L.rectangle(bounds, {
             color: "#c94f37",
             fillColor: "#ef6c4d",
