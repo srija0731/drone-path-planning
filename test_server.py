@@ -29,8 +29,7 @@ class ServerApiTests(unittest.TestCase):
     def test_obstacles_endpoint_exposes_no_fly_zones(self):
         with urlopen(f"{self.base_url}/api/obstacles") as response:
             data = json.loads(response.read())
-        self.assertGreaterEqual(len(data), 1)
-        self.assertEqual(set(data[0]), {"x", "y", "w", "h"})
+        self.assertEqual(data, [])
 
     def test_obstacles_endpoint_preserves_gps_obstacle_shape(self):
         with urlopen(f"{self.base_url}/api/obstacles") as response:

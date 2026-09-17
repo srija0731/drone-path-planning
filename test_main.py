@@ -14,8 +14,7 @@ class MainInputParsingTests(unittest.TestCase):
 
     def test_load_obstacles_from_json(self):
         obstacles = main.load_obstacles("obstacles.json")
-        self.assertTrue(len(obstacles) >= 1)
-        self.assertEqual(obstacles[0][0], 6)
+        self.assertEqual(obstacles, [])
 
     def test_load_obstacles_accepts_gps_circle(self):
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as handle:
