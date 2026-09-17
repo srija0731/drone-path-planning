@@ -16,6 +16,29 @@ let currentRoutes = [];
 let droneCount = 1;
 const maxDrones = 100;
 const routeColors = ["#ef6c4d", "#1f8a88", "#7357a6", "#d58b28", "#2d6cdf", "#bd4d80"];
+const isStaticDeployment = !apiBase;
+
+async function resolveStaticLocation(value) {
+    const cleaned = value.replace("(", "").replace(")", "");
+    const parts = cleaned.replaceAll(",", " ").trim().split(/\s+/).map(Number);
+    if (parts.length === 2 && parts.every(Number.isFinite) && parts[0] >= -90 && parts[0] <= 90 && parts[1] >= -180 && parts[1] <= 180) {
+        return { lat: parts[0], lon: parts[1] };
+    }
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(value)}`, {
+        headers: { "Accept-Language": "en" }
+    });
+    const results = await response.json();
+    if (!response.ok || !results.length) throw new Error(`Could not find ${value}. Try a more specific place or coordinates.`);
+    return { lat: Number(results[0].lat), lon: Number(results[0].lon) };
+}
+
+async function planStaticRoutes(drones) {
+    return Promise.all(drones.map(async (drone, index) => {
+        const start = await resolveStaticLocation(drone.start);
+        const goal = await resolveStaticLocation(drone.goal);
+        return { drone: index + 1, start, goal, path: [start, goal], cost: Math.hypot(goal.lat - start.lat, goal.lon - start.lon) };
+    }));
+}
 
 function setStatus(text, online = true) {
     statusText.textContent = text;
@@ -109,9 +132,13 @@ droneList.addEventListener("click", (event) => {
         updateRemoveButtons();
         saveMissionInputs();
         localStorage.removeItem(routesStorageKey);
-        fetch(`${apiBase}/api/drones/${removedDrone}`, { method: "DELETE" })
-            .catch(() => {})
-            .finally(() => window.location.reload());
+        if (isStaticDeployment) {
+            window.location.reload();
+        } else {
+            fetch(`${apiBase}/api/drones/${removedDrone}`, { method: "DELETE" })
+                .catch(() => {})
+                .finally(() => window.location.reload());
+        }
     }
 });
 
@@ -131,10 +158,15 @@ form.addEventListener("submit", async(event) => {
         if (incompleteDrone !== -1) {
             throw new Error(`Enter both locations for Drone ${incompleteDrone + 1}.`);
         }
-        const response = await fetch(`${apiBase}/api/plan`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ drones }) });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Unable to calculate route");
-        renderRoutes(data.routes);
+        const routes = isStaticDeployment
+            ? await planStaticRoutes(drones)
+            : await (async () => {
+                const response = await fetch(`${apiBase}/api/plan`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ drones }) });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Unable to calculate route");
+                return data.routes;
+            })();
+        renderRoutes(routes);
         saveMissionInputs();
     } catch (error) {
         document.querySelector("#route-status").textContent = "Route failed";
@@ -147,7 +179,7 @@ form.addEventListener("submit", async(event) => {
     }
 });
 
-setStatus("Live geocoding ready");
+setStatus(isStaticDeployment ? "Static map mode" : "Live geocoding ready");
 restoreMissionInputs();
 try {
     const savedRoutes = JSON.parse(localStorage.getItem(routesStorageKey) || "null");
