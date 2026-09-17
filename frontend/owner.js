@@ -5,6 +5,8 @@ const fleetList = document.querySelector("#owner-fleet-list");
 const syncState = document.querySelector("#sync-state");
 const isLocalStaticServer = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port !== "8000";
 const apiBase = isLocalStaticServer ? "http://127.0.0.1:8000" : "";
+const isStaticDeployment = !apiBase;
+const routesStorageKey = "drone-path-planning-routes";
 let markerLayer = L.layerGroup().addTo(ownerMap);
 let obstacleLayer = L.layerGroup().addTo(ownerMap);
 const statusLabels = { planned: "Planned", in_transit: "In transit", reached_safely: "Reached safely", failed: "Attention required" };
@@ -53,6 +55,22 @@ function renderFleet(drones) {
 
 async function refreshOwnerView() {
     try {
+        if (isStaticDeployment) {
+            const routes = JSON.parse(localStorage.getItem(routesStorageKey) || "[]");
+            const drones = routes.map((route) => ({
+                drone: route.drone,
+                status: "planned",
+                connected: false,
+                battery: null,
+                position: route.start,
+                last_seen: new Date().toISOString()
+            }));
+            const obstacleResponse = await fetch("obstacles.json", { cache: "no-store" });
+            renderFleet(drones);
+            renderObstacles(obstacleResponse.ok ? await obstacleResponse.json() : []);
+            syncState.textContent = "Static mission view";
+            return;
+        }
         const [fleetResponse, obstacleResponse] = await Promise.all([
             fetch(`${apiBase}/api/drones`, { cache: "no-store" }),
             fetch(`${apiBase}/api/obstacles`, { cache: "no-store" })
