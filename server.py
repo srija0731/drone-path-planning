@@ -7,7 +7,7 @@ from pathlib import Path
 from threading import Lock
 from urllib.parse import urlparse
 
-from main import load_locations, load_obstacles, plan_drone_route, resolve_location
+from main import load_locations, load_obstacle_display_data, load_obstacles, plan_drone_route, resolve_location
 
 
 ROOT = Path(__file__).resolve().parent
@@ -93,13 +93,7 @@ class DroneRequestHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/api/obstacles":
-            obstacles = load_obstacles(ROOT / "obstacles.json")
-            self.send_json(
-                [
-                    {"x": x, "y": y, "w": width, "h": height}
-                    for x, y, width, height in obstacles
-                ]
-            )
+            self.send_json(load_obstacle_display_data(ROOT / "obstacles.json"))
             return
 
         super().do_GET()

@@ -119,11 +119,49 @@ def load_obstacles(path="obstacles.json"):
     obstacles = []
     for item in data:
         if isinstance(item, dict):
-            obstacles.append((float(item["x"]), float(item["y"]), float(item.get("w", 1)), float(item.get("h", 1))))
+            if {"lat", "lon", "radius_m"}.issubset(item):
+                latitude = float(item["lat"])
+                longitude = float(item["lon"])
+                radius_m = float(item["radius_m"])
+                if not -90 <= latitude <= 90 or not -180 <= longitude <= 180 or radius_m <= 0:
+                    raise ValueError("GPS obstacle coordinates or radius are invalid")
+                latitude_radius = radius_m / 111320
+                longitude_radius = radius_m / (111320 * max(math.cos(math.radians(latitude)), 0.01))
+                obstacles.append((longitude - longitude_radius, latitude - latitude_radius, longitude_radius * 2, latitude_radius * 2))
+            else:
+                obstacles.append((float(item["x"]), float(item["y"]), float(item.get("w", 1)), float(item.get("h", 1))))
         elif isinstance(item, (list, tuple)) and len(item) >= 4:
             obstacles.append((float(item[0]), float(item[1]), float(item[2]), float(item[3])))
 
     return obstacles
+
+
+def load_obstacle_display_data(path="obstacles.json"):
+    file_path = Path(path)
+    if not file_path.exists():
+        return []
+    with file_path.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+
+    display_data = []
+    for item in data:
+        if isinstance(item, dict) and {"lat", "lon", "radius_m"}.issubset(item):
+            display_data.append({
+                "name": str(item.get("name", "GPS obstacle")),
+                "lat": float(item["lat"]),
+                "lon": float(item["lon"]),
+                "radius_m": float(item["radius_m"]),
+            })
+        elif isinstance(item, dict):
+            display_data.append({
+                "x": float(item["x"]),
+                "y": float(item["y"]),
+                "w": float(item.get("w", 1)),
+                "h": float(item.get("h", 1)),
+            })
+        elif isinstance(item, (list, tuple)) and len(item) >= 4:
+            display_data.append({"x": float(item[0]), "y": float(item[1]), "w": float(item[2]), "h": float(item[3])})
+    return display_data
 
 
 # -------------------------------

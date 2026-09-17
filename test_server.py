@@ -32,6 +32,11 @@ class ServerApiTests(unittest.TestCase):
         self.assertGreaterEqual(len(data), 1)
         self.assertEqual(set(data[0]), {"x", "y", "w", "h"})
 
+    def test_obstacles_endpoint_preserves_gps_obstacle_shape(self):
+        with urlopen(f"{self.base_url}/api/obstacles") as response:
+            data = json.loads(response.read())
+        self.assertTrue(all("x" in item and "y" in item for item in data))
+
     def test_plan_endpoint_accepts_multiple_drones(self):
         request = Request(
             f"{self.base_url}/api/plan",

@@ -88,6 +88,21 @@ The obstacle file is JSON. Example:
 ]
 ```
 
+For GPS-based circular zones, use verified coordinates and metres:
+
+```json
+[
+  {
+    "name": "Surveyed restricted zone",
+    "lat": 17.3850,
+    "lon": 78.4867,
+    "radius_m": 1000
+  }
+]
+```
+
+GPS circles are used by the Python planner for collision avoidance and are drawn as circles in the owner view. Replace the sample data with trusted aviation, airport, landowner, or survey data before operating a real drone. The free GitHub Pages demo can display the circles, but it uses straight browser routes; use the Python backend for obstacle-aware routing.
+
 This file is optional. If it is missing, the program still runs with no obstacles.
 
 ### Optional location file

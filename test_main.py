@@ -1,4 +1,6 @@
 import unittest
+import json
+import tempfile
 
 import main
 
@@ -14,6 +16,18 @@ class MainInputParsingTests(unittest.TestCase):
         obstacles = main.load_obstacles("obstacles.json")
         self.assertTrue(len(obstacles) >= 1)
         self.assertEqual(obstacles[0][0], 6)
+
+    def test_load_obstacles_accepts_gps_circle(self):
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as handle:
+            json.dump([{"name": "surveyed zone", "lat": 17.385, "lon": 78.4867, "radius_m": 1000}], handle)
+            path = handle.name
+        try:
+            obstacles = main.load_obstacles(path)
+        finally:
+            import os
+            os.unlink(path)
+        self.assertEqual(len(obstacles), 1)
+        self.assertAlmostEqual(obstacles[0][1], 17.385 - (1000 / 111320), places=5)
 
     def test_rrt_star_finds_path_around_obstacle(self):
         obstacle = [(4, -1, 2, 12)]

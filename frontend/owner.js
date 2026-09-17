@@ -23,6 +23,15 @@ function renderObstacles(obstacles) {
     obstacleLayer.clearLayers();
     document.querySelector("#obstacle-count").textContent = obstacles.length;
     obstacles.forEach((obstacle, index) => {
+        if (obstacle.lat !== undefined && obstacle.lon !== undefined && obstacle.radius_m !== undefined) {
+            return L.circle([obstacle.lat, obstacle.lon], {
+                radius: obstacle.radius_m,
+                color: "#c94f37",
+                fillColor: "#ef6c4d",
+                fillOpacity: 0.25,
+                weight: 2
+            }).bindPopup(obstacle.name || `No-fly zone ${index + 1}`).addTo(obstacleLayer);
+        }
         const bounds = [
             [obstacle.y, obstacle.x],
             [obstacle.y + obstacle.h, obstacle.x + obstacle.w]
