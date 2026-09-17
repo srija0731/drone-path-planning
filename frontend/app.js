@@ -33,7 +33,7 @@ async function resolveStaticLocation(value) {
 }
 
 async function planStaticRoutes(drones) {
-    return Promise.all(drones.map(async (drone, index) => {
+    return Promise.all(drones.map(async(drone, index) => {
         const start = await resolveStaticLocation(drone.start);
         const goal = await resolveStaticLocation(drone.goal);
         return { drone: index + 1, start, goal, path: [start, goal], cost: Math.hypot(goal.lat - start.lat, goal.lon - start.lon) };
@@ -158,9 +158,9 @@ form.addEventListener("submit", async(event) => {
         if (incompleteDrone !== -1) {
             throw new Error(`Enter both locations for Drone ${incompleteDrone + 1}.`);
         }
-        const routes = isStaticDeployment
-            ? await planStaticRoutes(drones)
-            : await (async () => {
+        const routes = isStaticDeployment ?
+            await planStaticRoutes(drones) :
+            await (async() => {
                 const response = await fetch(`${apiBase}/api/plan`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ drones }) });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || "Unable to calculate route");
