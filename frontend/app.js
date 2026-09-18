@@ -1,6 +1,3 @@
-
-
-```javascript
 // Center map on Hyderabad
 const map = L.map("map", { zoomControl: false }).setView([17.3850, 78.4867], 12);
 L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -69,10 +66,6 @@ async function planStaticRoutes(drones) {
 function setStatus(text, online = true) {
     statusText.textContent = text;
     document.querySelector("#status-dot").style.background = online ? "#1f8a88" : "#ef6c4d";
-}
-
-function pointLabel(point) {
-    return `${point.lat.toFixed(5)}, ${point.lon.toFixed(5)}`;
 }
 
 function collectDrones() {
@@ -179,38 +172,48 @@ form.addEventListener("submit", async(event) => {
     calculateButton.querySelector(".arrow").textContent = "...";
     document.querySelector("#route-status").textContent = `Calculating ${droneList.children.length} drone${droneList.children.length === 1 ? "" : "s"}...`;
     try {
-    const drones = collectDrones().map((drone) => ({
-        start: drone.start.trim(),
-        goal: drone.goal.trim()
-    }));
+        const drones = collectDrones().map((drone) => ({
+            start: drone.start.trim(),
+            goal: drone.goal.trim()
+        }));
 
-    const incompleteDrone = drones.findIndex((drone) => !drone.start || !drone.goal);
-    if (incompleteDrone !== -1) {
-        throw new Error(`Enter both locations for Drone ${incompleteDrone + 1}.`);
+        const incompleteDrone = drones.findIndex((drone) => !drone.start || !drone.goal);
+        if (incompleteDrone !== -1) {
+            throw new Error(`Enter both locations for Drone ${incompleteDrone + 1}.`);
+        }
+
+        const routes = isStaticDeployment
+            ? await planStaticRoutes(drones)
+            : await (async () => {
+                const response = await fetch(`${apiBase}/api/plan`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ drones })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || "Unable to calculate route");
+                return data.routes;
+            })();
+
+        renderRoutes(routes);
+        saveMissionInputs();
+    } catch (error) {
+        document.querySelector("#route-status").textContent = "Route failed";
+        errorBox.textContent = error.message;
+    } finally {
+        calculateButton.disabled = false;
+        calculateButton.setAttribute("aria-busy", "false");
+        calculateButton.querySelector("span").textContent = "Calculate route";
+        calculateButton.querySelector(".arrow").textContent = "↗";
     }
+});
 
-    // Calculate routes
-    const routes = isStaticDeployment
-        ? await planStaticRoutes(drones)
-        : await (async () => {
-            const response = await fetch(`${apiBase}/api/plan`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ drones })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || "Unable to calculate route");
-            return data.routes;
-        })();
-
-    renderRoutes(routes);
-    saveMissionInputs();
+// Initial status and restore saved missions/routes
+setStatus(isStaticDeployment ? "Static map mode" : "Live geocoding ready");
+restoreMissionInputs();
+try {
+    const savedRoutes = JSON.parse(localStorage.getItem(routesStorageKey) || "null");
+    if (Array.isArray(savedRoutes)) renderRoutes(savedRoutes);
 } catch (error) {
-    document.querySelector("#route-status").textContent = "Route failed";
-    errorBox.textContent = error.message;
-} finally {
-    calculateButton.disabled = false;
-    calculateButton.setAttribute("aria-busy", "false");
-    calculateButton.querySelector("span").textContent = "Calculate route";
-    calculateButton.querySelector(".arrow").textContent = "↗";
+    localStorage.removeItem(routesStorageKey);
 }
