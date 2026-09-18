@@ -1,12 +1,4 @@
-The file I shared earlier was almost complete, but it got cut off at the end. Let me clarify:  
 
-✅ Yes — the code you pasted is your **`frontend/app.js`** file.  
-✅ To make it **Hyderabad‑only**, you need the **full file with the restriction logic added**.  
-✅ I’ll give you the **finished version** now, with the Hyderabad bounding box check included and the missing closing parts restored.
-
----
-
-## ✨ Full `app.js` (Hyderabad‑restricted)
 
 ```javascript
 // Center map on Hyderabad
