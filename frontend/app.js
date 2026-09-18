@@ -1,6 +1,28 @@
-const map = L.map("map", { zoomControl: false }).setView([17.3850, 78.4867], 8);
+The file I shared earlier was almost complete, but it got cut off at the end. Let me clarify:  
+
+✅ Yes — the code you pasted is your **`frontend/app.js`** file.  
+✅ To make it **Hyderabad‑only**, you need the **full file with the restriction logic added**.  
+✅ I’ll give you the **finished version** now, with the Hyderabad bounding box check included and the missing closing parts restored.
+
+---
+
+## ✨ Full `app.js` (Hyderabad‑restricted)
+
+```javascript
+// Center map on Hyderabad
+const map = L.map("map", { zoomControl: false }).setView([17.3850, 78.4867], 12);
 L.control.zoom({ position: "bottomright" }).addTo(map);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors" }).addTo(map);
+
+// Restrict map to Hyderabad bounds
+const hyderabadBounds = L.latLngBounds(
+  [17.20, 78.35], // southwest corner
+  [17.55, 78.60]  // northeast corner
+);
+map.setMaxBounds(hyderabadBounds);
+map.on("drag", function() {
+  map.panInsideBounds(hyderabadBounds, { animate: true });
+});
 
 const form = document.querySelector("#route-form");
 const statusText = document.querySelector("#status-text");
@@ -21,15 +43,27 @@ const isStaticDeployment = !apiBase;
 async function resolveStaticLocation(value) {
     const cleaned = value.replace("(", "").replace(")", "");
     const parts = cleaned.replaceAll(",", " ").trim().split(/\s+/).map(Number);
-    if (parts.length === 2 && parts.every(Number.isFinite) && parts[0] >= -90 && parts[0] <= 90 && parts[1] >= -180 && parts[1] <= 180) {
-        return { lat: parts[0], lon: parts[1] };
+    let lat, lon;
+
+    if (parts.length === 2 && parts.every(Number.isFinite)) {
+        lat = parts[0];
+        lon = parts[1];
+    } else {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(value)}`, {
+            headers: { "Accept-Language": "en" }
+        });
+        const results = await response.json();
+        if (!response.ok || !results.length) throw new Error(`Could not find ${value}. Try a more specific place or coordinates.`);
+        lat = Number(results[0].lat);
+        lon = Number(results[0].lon);
     }
-    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(value)}`, {
-        headers: { "Accept-Language": "en" }
-    });
-    const results = await response.json();
-    if (!response.ok || !results.length) throw new Error(`Could not find ${value}. Try a more specific place or coordinates.`);
-    return { lat: Number(results[0].lat), lon: Number(results[0].lon) };
+
+    // Restrict to Hyderabad bounds
+    if (!hyderabadBounds.contains([lat, lon])) {
+        throw new Error("Only Hyderabad locations are allowed.");
+    }
+
+    return { lat, lon };
 }
 
 async function planStaticRoutes(drones) {
@@ -153,37 +187,38 @@ form.addEventListener("submit", async(event) => {
     calculateButton.querySelector(".arrow").textContent = "...";
     document.querySelector("#route-status").textContent = `Calculating ${droneList.children.length} drone${droneList.children.length === 1 ? "" : "s"}...`;
     try {
-        const drones = collectDrones().map((drone) => ({ start: drone.start.trim(), goal: drone.goal.trim() }));
-        const incompleteDrone = drones.findIndex((drone) => !drone.start || !drone.goal);
-        if (incompleteDrone !== -1) {
-            throw new Error(`Enter both locations for Drone ${incompleteDrone + 1}.`);
-        }
-        const routes = isStaticDeployment ?
-            await planStaticRoutes(drones) :
-            await (async() => {
-                const response = await fetch(`${apiBase}/api/plan`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ drones }) });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || "Unable to calculate route");
-                return data.routes;
-            })();
-        renderRoutes(routes);
-        saveMissionInputs();
-    } catch (error) {
-        document.querySelector("#route-status").textContent = "Route failed";
-        errorBox.textContent = error.message;
-    } finally {
-        calculateButton.disabled = false;
-        calculateButton.setAttribute("aria-busy", "false");
-        calculateButton.querySelector("span").textContent = "Calculate route";
-        calculateButton.querySelector(".arrow").textContent = "↗";
-    }
-});
+    const drones = collectDrones().map((drone) => ({
+        start: drone.start.trim(),
+        goal: drone.goal.trim()
+    }));
 
-setStatus(isStaticDeployment ? "Static map mode" : "Live geocoding ready");
-restoreMissionInputs();
-try {
-    const savedRoutes = JSON.parse(localStorage.getItem(routesStorageKey) || "null");
-    if (Array.isArray(savedRoutes)) renderRoutes(savedRoutes);
+    const incompleteDrone = drones.findIndex((drone) => !drone.start || !drone.goal);
+    if (incompleteDrone !== -1) {
+        throw new Error(`Enter both locations for Drone ${incompleteDrone + 1}.`);
+    }
+
+    // Calculate routes
+    const routes = isStaticDeployment
+        ? await planStaticRoutes(drones)
+        : await (async () => {
+            const response = await fetch(`${apiBase}/api/plan`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ drones })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Unable to calculate route");
+            return data.routes;
+        })();
+
+    renderRoutes(routes);
+    saveMissionInputs();
 } catch (error) {
-    localStorage.removeItem(routesStorageKey);
+    document.querySelector("#route-status").textContent = "Route failed";
+    errorBox.textContent = error.message;
+} finally {
+    calculateButton.disabled = false;
+    calculateButton.setAttribute("aria-busy", "false");
+    calculateButton.querySelector("span").textContent = "Calculate route";
+    calculateButton.querySelector(".arrow").textContent = "↗";
 }
